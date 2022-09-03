@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use function GuzzleHttp\Promise\exception_for;
 
+
 class UserController extends Controller
 {
     /**
@@ -112,7 +113,8 @@ class UserController extends Controller
 
         // TODO: Create function that logges the user in
         if (Hash::check($request->password, $password)) {
-            return response('Logged in', 200);
+            $token = $request->user()->createToken($request->email)->plainTextToken;
+            return response(['token' => $token, 'message' => 'Logged in'], 200);
         } else {
             return response('Wrong email or password', 401);
         }

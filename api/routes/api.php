@@ -14,10 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [\App\Http\Controllers\api\UserController::class, 'login'])->name('user.authenticate ');
-Route::get('/user', [\App\Http\Controllers\api\UserController::class, 'index'])->name('user.index');
-Route::post('/user', [\App\Http\Controllers\api\UserController::class, 'store'])->name('user.create');
-//
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
+
+Route::post('/auth/register', [\App\Http\Controllers\api\AuthController::class, 'register'])->name('user.register');
+Route::post('/auth/authenticate', [\App\Http\Controllers\api\AuthController::class, 'authenticate'])->name('user.authenticate');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+});
