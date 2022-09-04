@@ -31,4 +31,19 @@ RUN mkdir -p /home/$user/.composer && \
 # Set working directory
 WORKDIR /var/www
 
+
+RUN npm install
+RUN composer install
+RUN php artisan key:generate
+
+# Expose port 8000 and start php-fpm server
+EXPOSE 8000
+CMD ["php-fpm"]
+
+RUN php artisan optimize:clear
+RUN composer dump-autoload
+
+RUN php artisan migrate:fresh --seed
+
+
 USER $user

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\api;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -103,7 +102,6 @@ class AuthController extends Controller
                 'data' => $user->createToken('web')->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
-            Log::debug($request->all());
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage(),
