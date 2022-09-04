@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -34,8 +35,8 @@ class AuthController extends Controller
             if ($validate->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validate->errors()
+                    'message' => $validate->errors(),
+                    'data' => []
                 ], 401);
             }
 
@@ -48,13 +49,14 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'User Created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'message' => 'success',
+                'data' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
+                'data' => []
             ], 500);
         }
     }
@@ -79,8 +81,8 @@ class AuthController extends Controller
             if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validateUser->errors()
+                    'message' => $validateUser->errors(),
+                    'data' => []
                 ], 401);
             }
 
@@ -88,20 +90,59 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
+                    'data' => []
                 ], 401);
             }
 
             $user = User::where('email', $request->email)->first();
 
+
             return response()->json([
                 'status' => true,
-                'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'message' => 'success',
+                'data' => $user->createToken('web')->plainTextToken
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::debug($request->all());
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => []
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+    public function logoutForce(Request $request)
+    {
+        try {
+            $request->user()->tokens()->delete;
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => []
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'data' => []
             ], 500);
         }
     }
