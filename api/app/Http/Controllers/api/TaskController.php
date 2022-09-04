@@ -188,4 +188,54 @@ class TaskController extends Controller
             'data' => $request->validated()
         ]);
     }
+
+    public function updateTask(Request $request, $id)
+    {
+        try {
+            $task = $request->user()->tasks()->find($id);
+            if (!$task) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Task not found',
+                    'data' => []
+                ], 404);
+            }
+
+            // Validate request
+            $validate = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'sometimes|string|max:255',
+                    'content' => 'sometimes|string|max:1020',
+                    'status' => ['sometimes', Rule::in(Task::STATUS)],
+                ]
+            );
+
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validate->errors(),
+                    'data' => []
+                ], 401);
+            }
+
+            $task->update([
+                'name' => $request->name,
+                'content' => $request->content,
+                'status' => $request->status,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $task
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
 }

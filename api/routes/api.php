@@ -72,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [\App\Http\Controllers\api\TaskController::class, 'myTasks'])->name('tasks.me');
         Route::post('/me/new', [\App\Http\Controllers\api\TaskController::class, 'newTask'])->name('tasks.create');
         Route::get('/me/{id}', [\App\Http\Controllers\api\TaskController::class, 'myTask'])->name('tasks.task');
+
+        Route::post('/me/{id}', [\App\Http\Controllers\api\TaskController::class, 'updateTask'])->name('tasks.update');
     });
 
 
