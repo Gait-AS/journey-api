@@ -20,3 +20,12 @@ Route::get('/login', function () {
         'data' => []
     ], 401);
 })->name('login');
+
+
+Route::get('/', function (Request $request) {
+    return response()->json([
+        'status' => true,
+        'message' => 'success',
+        'data' => []
+    ], 200);
+});
