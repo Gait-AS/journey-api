@@ -106,18 +106,22 @@ class TaskController extends Controller
             $created_by = (int) $request->user()->id;
             $request->assigned_to = $request->user()->id;
 
+            if (!isset($request->status)) {
+                $request->status = 'todo';
+            }
+
 
             // WORKING REAL LIFE SCENARIO
             // $request->assigned_to = ($request->user()->role === 'member') ? $request->user()->id : (int) $request->assigned_to;
 
 
-            if (!$request->assigned_to) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'assigned_to is required',
-                    'data' => []
-                ], 400);
-            }
+            // if (!$request->assigned_to) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'assigned_to is required',
+            //         'data' => []
+            //     ], 400);
+            // }
 
             // Validate request
             $validate = Validator::make(
@@ -125,7 +129,7 @@ class TaskController extends Controller
                 [
                     'name' => 'required|string|max:255',
                     'content' => 'sometimes|string|max:1020',
-                    'status' => ['required', Rule::in(Task::STATUS)],
+                    'status' => ['sometimes', Rule::in(Task::STATUS)],
                     'team_id' => 'required|integer|exists:teams,id',
                     'assigned_to' => 'sometimes|integer|exists:users,id',
                 ]
@@ -161,32 +165,6 @@ class TaskController extends Controller
                 'data' => []
             ], 500);
         }
-
-        $request->validate([]);
-
-        if ($request->validated()) {
-            $task = Task::create([
-                'name' => $request->name,
-                'content' => $request->content,
-                'status' => $request->status,
-                'team_id' => $request->team_id,
-                'assigned_to' => $request->assigned_to,
-                'created_by' => $created_by,
-            ]);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'success',
-                'data' => $task
-            ]);
-        }
-
-
-        return response()->json([
-            'status' => false,
-            'message' => 'failed',
-            'data' => $request->validated()
-        ]);
     }
 
     public function updateTask(Request $request, $id)
@@ -229,6 +207,34 @@ class TaskController extends Controller
                 'status' => true,
                 'message' => 'success',
                 'data' => $task
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function deleteTask(Request $request, $id)
+    {
+        try {
+            $task = $request->user()->tasks()->find($id);
+            if (!$task) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Task not found',
+                    'data' => []
+                ], 404);
+            }
+
+            $task->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => []
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([

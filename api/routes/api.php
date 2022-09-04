@@ -50,6 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //     });
     // });
 
+    // PROGRESSBAR
+    Route::get('/progress', [\App\Http\Controllers\api\ProgressController::class, 'index'])->name('progress.index');
+
 
     // TEAM ROUTES
     Route::prefix('teams')->group(function () {
@@ -70,10 +73,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('tasks')->group(function () {
         Route::get('/me', [\App\Http\Controllers\api\TaskController::class, 'myTasks'])->name('tasks.me');
-        Route::post('/me/new', [\App\Http\Controllers\api\TaskController::class, 'newTask'])->name('tasks.create');
+        Route::post('/me/new', [\App\Http\Controllers\api\TaskController::class, 'newTask'])->name('task.create');
+
+        Route::get('/me/delete/{id}', [\App\Http\Controllers\api\TaskController::class, 'deleteTask'])->name('task.delete');
         Route::get('/me/{id}', [\App\Http\Controllers\api\TaskController::class, 'myTask'])->name('tasks.task');
 
-        Route::post('/me/{id}', [\App\Http\Controllers\api\TaskController::class, 'updateTask'])->name('tasks.update');
+        Route::post('/me/{id}', [\App\Http\Controllers\api\TaskController::class, 'updateTask'])->name('task.update');
     });
 
 

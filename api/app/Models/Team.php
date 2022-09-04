@@ -22,4 +22,9 @@ class Team extends Model
 
         return User::where('id', $leader_id)->first();
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

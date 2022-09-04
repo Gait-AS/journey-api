@@ -17,8 +17,8 @@ class TaskFactory extends Factory
      */
     public function definition()
     {
-        $team_id = fake()->numberBetween(1, 20);
-        $assigned_to = User::where('team_id', $team_id)->first()->id;
+        $team_id = fake()->numberBetween(1, 3);
+        $assigned_to = fake()->randomElement(User::where('team_id', $team_id)->pluck('id')->toArray());
 
         $status = fake()->randomElement(['todo', 'doing', 'review', 'done']);
 
@@ -31,7 +31,7 @@ class TaskFactory extends Factory
         return [
             'name' => fake()->word(),
             'content' => fake()->sentence(),
-            'created_by' => fake()->randomNumber(2, true),
+            'created_by' => fake()->numberBetween(1, 30),
             'assigned_to' => $assigned_to,
             'status' => $status,
             'completed_at' => $completed_at,

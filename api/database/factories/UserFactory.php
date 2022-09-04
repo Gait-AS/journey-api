@@ -22,7 +22,7 @@ class UserFactory extends Factory
             'first_name' => fake()->name(),
             'last_name' => fake()->name(),
             'email' => fake()->safeEmail(),
-            'team_id' => fake()->numberBetween(1, 20),
+            'team_id' => fake()->numberBetween(1, 3),
             'role' => fake()->randomElement(['member', 'leader']),
             'email_verified_at' => now(),
             'password' => Hash::make('test'), // password
